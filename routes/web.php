@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SubscriberController;
@@ -13,6 +14,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// OAuth routes (publicly accessible for redirect flow)
+Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('socialite.redirect');
+Route::get('/auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('socialite.callback');
+
 // Guest routes (only for non-authenticated users)
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
@@ -21,6 +26,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
 });
+
+// Complete registration (for OAuth users without organisation)
+Route::get('/register/complete', [RegisterController::class, 'complete'])->name('register.complete')->middleware('auth');
+Route::post('/register/complete', [RegisterController::class, 'storeOrganisation'])->name('register.complete.store')->middleware('auth');
 
 // Logout (requires auth)
 Route::post('/logout', [LoginController::class, 'destroy'])

@@ -1,78 +1,45 @@
 @extends('layouts.guest')
 
-@section('title', 'Register')
+@section('title', 'Complete Registration')
 
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Create Your Account</h4>
-                    <small>Register yourself and your organisation in one step</small>
+                    <h4 class="mb-0">Complete Your Registration</h4>
+                    <small>Just one more step - add your organisation details</small>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('register') }}">
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
+                    @if(session('info'))
+                        <div class="alert alert-info">{{ session('info') }}</div>
+                    @endif
+
+                    <div class="alert alert-light border mb-4">
+                        <strong>Welcome, {{ auth()->user()->name }}!</strong><br>
+                        <small class="text-muted">Signed in as {{ auth()->user()->email }}</small>
+                    </div>
+
+                    <form method="POST" action="{{ route('register.complete.store') }}">
                         @csrf
 
-                        {{-- Your Details --}}
-                        <h5 class="mb-3 text-muted">👤 Your Details</h5>
-
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Your Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                   id="name" name="name" value="{{ old('name') }}" required autofocus>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                   id="email" name="email" value="{{ old('email') }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                       id="password" name="password" required>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                                <input type="password" class="form-control"
-                                       id="password_confirmation" name="password_confirmation" required>
-                            </div>
-                        </div>
-
-                        <div class="text-center text-muted my-3">
-                            <small>or sign up with</small>
-                        </div>
-
-                        @include('auth.partials.sso-buttons')
-
-                        <hr class="my-4">
-
-                        {{-- Organisation Details --}}
                         <h5 class="mb-3 text-muted">🏢 Organisation Details</h5>
 
                         <div class="mb-3">
                             <label for="organisation_name" class="form-label">Organisation Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('organisation_name') is-invalid @enderror"
-                                   id="organisation_name" name="organisation_name" value="{{ old('organisation_name') }}" required>
+                                   id="organisation_name" name="organisation_name" value="{{ old('organisation_name') }}" required autofocus>
                             @error('organisation_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="organisation_email" class="form-label">Billing Email <small class="text-muted">(optional, defaults to your email)</small></label>
+                            <label for="organisation_email" class="form-label">Billing Email <small class="text-muted">(optional, defaults to {{ auth()->user()->email }})</small></label>
                             <input type="email" class="form-control @error('organisation_email') is-invalid @enderror"
                                    id="organisation_email" name="organisation_email" value="{{ old('organisation_email') }}">
                             @error('organisation_email')
@@ -113,13 +80,10 @@
 
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg">
-                                Create Account & Organisation
+                                Complete Registration
                             </button>
                         </div>
                     </form>
-                </div>
-                <div class="card-footer text-center bg-light">
-                    Already have an account? <a href="{{ route('login') }}">Log in</a>
                 </div>
             </div>
         </div>

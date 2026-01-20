@@ -14,6 +14,10 @@
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
+                    @if(session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
+
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
@@ -47,6 +51,12 @@
                             </button>
                         </div>
                     </form>
+
+                    <div class="text-center text-muted my-3">
+                        <small>or continue with</small>
+                    </div>
+
+                    @include('auth.partials.sso-buttons')
                 </div>
                 <div class="card-footer text-center bg-light">
                     Don't have an account? <a href="{{ route('register') }}">Register</a>
