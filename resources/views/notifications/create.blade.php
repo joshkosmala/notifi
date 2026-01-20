@@ -97,11 +97,13 @@
                         <div class="collapse {{ old('scheduled_for') ? 'show' : '' }}" id="schedule-field">
                             <div class="mb-3">
                                 <label for="scheduled_for" class="form-label">Schedule For</label>
-                                <input type="datetime-local" 
+                                <input type="text" 
                                        class="form-control @error('scheduled_for') is-invalid @enderror" 
                                        id="scheduled_for" 
                                        name="scheduled_for" 
-                                       value="{{ old('scheduled_for') }}">
+                                       value="{{ old('scheduled_for') }}"
+                                       data-datetime-input>
+                                <div class="form-text">Select a date and time in the future</div>
                                 @error('scheduled_for')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

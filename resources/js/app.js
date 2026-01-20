@@ -2,6 +2,8 @@ import './bootstrap';
 import * as bootstrap from 'bootstrap';
 import intlTelInput from 'intl-tel-input';
 import 'intl-tel-input/build/css/intlTelInput.css';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoibm90aWZpbnoiLCJhIjoiY21rbXZwYWdrMGppZDNlcHlkczcxMXFqeSJ9.qrbOQi87M89FgLk_kcyuzg';
 
@@ -136,6 +138,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value.length >= 3) {
                 fetchSuggestions(this.value);
             }
+        });
+    });
+
+    // Initialize Flatpickr datetime picker on any element with data-datetime-input
+    const datetimeInputs = document.querySelectorAll('[data-datetime-input]');
+    
+    datetimeInputs.forEach(function(input) {
+        flatpickr(input, {
+            enableTime: true,
+            dateFormat: 'Y-m-d H:i',
+            altInput: true,
+            altFormat: 'D j M Y, h:i K',
+            minDate: 'today',
+            time_24hr: false,
+            minuteIncrement: 15,
+            disableMobile: true,
         });
     });
 });

@@ -16,8 +16,12 @@ class SubscriberFactory extends Factory
      */
     public function definition(): array
     {
+        // Generate NZ mobile numbers (021, 022, 027, 029)
+        $prefix = fake()->randomElement(['21', '22', '27', '29']);
+        $number = fake()->numerify('#######');
+
         return [
-            'phone' => fake()->unique()->e164PhoneNumber(),
+            'phone' => '+64'.$prefix.$number,
             'name' => fake()->optional()->name(),
             'email' => fake()->optional()->safeEmail(),
         ];

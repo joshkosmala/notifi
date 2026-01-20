@@ -35,7 +35,9 @@
                     @forelse($notifications as $notification)
                         <tr>
                             <td>
-                                <strong>{{ $notification->title }}</strong>
+                                <a href="{{ route('notifications.show', $notification) }}" class="text-decoration-none">
+                                    <strong>{{ $notification->title }}</strong>
+                                </a>
                                 <br>
                                 <small class="text-muted text-truncate d-inline-block" style="max-width: 400px;">
                                     {{ $notification->body }}

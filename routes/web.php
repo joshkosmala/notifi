@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -32,13 +33,12 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('notifications', NotificationController::class);
 
-    Route::get('/subscribers', function () {
-        return redirect('/dashboard'); // Placeholder
-    })->name('subscribers.index');
+    Route::resource('subscribers', SubscriberController::class)->only(['index', 'show', 'destroy']);
+    Route::post('/subscribers/{subscriber}/resubscribe', [SubscriberController::class, 'resubscribe'])->name('subscribers.resubscribe');
 });
 
 // Super Admin routes (requires auth + super admin)
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'super.admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/organisations', function () {

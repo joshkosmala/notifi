@@ -24,76 +24,87 @@ class DatabaseSeeder extends Seeder
 
         // Create Org Admin users
         $councilAdmin = User::factory()->create([
-            'name' => 'Sarah Council',
-            'email' => 'sarah@scc.qld.gov.au',
+            'name' => 'Sarah Williams',
+            'email' => 'sarah@tauranga.govt.nz',
         ]);
 
-        $gymAdmin = User::factory()->create([
-            'name' => 'Mike Trainer',
-            'email' => 'mike@crossfitnoosa.com.au',
+        $cafeAdmin = User::factory()->create([
+            'name' => 'Mike Chen',
+            'email' => 'mike@mountlifeguards.co.nz',
         ]);
 
         $schoolAdmin = User::factory()->create([
             'name' => 'Principal Jane',
-            'email' => 'principal@coolumss.eq.edu.au',
+            'email' => 'principal@papamoa.school.nz',
         ]);
 
-        // Create sample organisations
+        // Create sample organisations (NZ based)
         $council = Organisation::factory()->verified()->create([
-            'name' => 'Sunshine Coast Council',
-            'email' => 'alerts@scc.qld.gov.au',
-            'url' => 'https://www.sunshinecoast.qld.gov.au',
+            'name' => 'Tauranga City Council',
+            'email' => 'alerts@tauranga.govt.nz',
+            'url' => 'https://www.tauranga.govt.nz',
+            'latitude' => -37.6870,
+            'longitude' => 176.1654,
+            'timezone' => 'Pacific/Auckland',
         ]);
 
-        $gym = Organisation::factory()->verified()->create([
-            'name' => 'CrossFit Noosa',
-            'email' => 'info@crossfitnoosa.com.au',
+        $cafe = Organisation::factory()->verified()->create([
+            'name' => 'Mount Maunganui Surf Lifesaving Club',
+            'email' => 'info@mountlifeguards.co.nz',
+            'url' => 'https://www.mountlifeguards.co.nz',
+            'latitude' => -37.6324,
+            'longitude' => 176.1785,
+            'timezone' => 'Pacific/Auckland',
         ]);
 
         $school = Organisation::factory()->create([
-            'name' => 'Coolum State School',
-            'email' => 'office@coolumss.eq.edu.au',
+            'name' => 'Papamoa Beach School',
+            'email' => 'office@papamoa.school.nz',
+            'url' => 'https://www.papamoa.school.nz',
+            'latitude' => -37.7195,
+            'longitude' => 176.2983,
+            'timezone' => 'Pacific/Auckland',
         ]);
 
         // Attach admins to their organisations
         $councilAdmin->organisations()->attach($council, ['role' => 'owner']);
-        $gymAdmin->organisations()->attach($gym, ['role' => 'owner']);
+        $cafeAdmin->organisations()->attach($cafe, ['role' => 'owner']);
         $schoolAdmin->organisations()->attach($school, ['role' => 'owner']);
 
-        // Create subscribers
+        // Create subscribers with NZ phone numbers
         $subscribers = Subscriber::factory(25)->verified()->create();
 
         // Subscribe them to organisations
         foreach ($subscribers as $subscriber) {
             $subscriber->organisations()->attach(
-                collect([$council, $gym, $school])->random(rand(1, 3))
+                collect([$council, $cafe, $school])->random(rand(1, 3))
             );
         }
 
         // Create some notifications
         Notification::factory()->sent()->create([
             'organisation_id' => $council->id,
-            'title' => 'Road Closure - David Low Way',
-            'body' => 'David Low Way will be closed between Coolum and Peregian from 6am-6pm tomorrow for roadworks. Please use alternative routes via Eumundi.',
+            'title' => 'Road Closure - Marine Parade',
+            'body' => 'Marine Parade will be closed between Salisbury Ave and Adams Ave from 7am-5pm tomorrow for pipe repairs. Use Maunganui Road instead.',
         ]);
 
         Notification::factory()->sent()->create([
             'organisation_id' => $council->id,
-            'title' => 'Boil Water Alert - Maroochydore',
-            'body' => 'Water supply in Maroochydore CBD may be contaminated. Boil water before drinking until further notice.',
-            'link' => 'https://www.sunshinecoast.qld.gov.au/alerts',
+            'title' => 'Beach Warning - Rip Currents',
+            'body' => 'Strong rip currents at Mount Main Beach today. Swim between the flags only. Lifeguards on patrol until 6pm.',
+            'link' => 'https://www.tauranga.govt.nz/council/council-news-and-information',
         ]);
 
         Notification::factory()->create([
-            'organisation_id' => $gym->id,
-            'title' => '6am Class Cancelled Tomorrow',
-            'body' => 'Coach Sarah is unwell. 6am class cancelled. 7:30am class will run as normal.',
+            'organisation_id' => $cafe->id,
+            'title' => 'Closed for Private Event',
+            'body' => 'The club will be closed to the public Saturday evening for a wedding reception. Normal hours resume Sunday 7am.',
         ]);
 
         Notification::factory()->scheduled()->create([
             'organisation_id' => $school->id,
-            'title' => 'Athletics Carnival Postponed',
-            'body' => 'Due to forecast rain, Friday\'s athletics carnival is postponed to next Tuesday. Same times apply.',
+            'title' => 'School Gala Day Reminder',
+            'body' => 'Don\'t forget our annual gala is this Saturday from 10am! Bring the family for food, games, and fun. Cash and EFTPOS available.',
         ]);
     }
 }
