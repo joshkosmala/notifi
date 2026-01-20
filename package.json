@@ -15,8 +15,10 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@mapbox/search-js-web": "^1.5.1",
         "@popperjs/core": "^2.11.8",
         "bootstrap": "^5.3.8",
+        "intl-tel-input": "^25.15.0",
         "sass": "^1.97.2"
     }
 }

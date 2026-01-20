@@ -1,1 +1,23 @@
 @import 'bootstrap/scss/bootstrap';
+
+// Keep links the same color as text
+a.text-decoration-none {
+    color: inherit;
+
+    &:hover {
+        color: inherit;
+    }
+}
+
+// International phone input styling
+.iti {
+    width: 100%;
+}
+
+.iti__tel-input {
+    padding-left: 52px !important;
+}
+
+.iti__search-input {
+    padding: 12px 16px;
+}
