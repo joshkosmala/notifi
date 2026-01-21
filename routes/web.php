@@ -72,5 +72,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'super.admin'])->gro
     Route::get('/organisations/{organisation}', [AdminDashboardController::class, 'showOrganisation'])->name('organisations.show');
     Route::post('/organisations/{organisation}/verify', [AdminDashboardController::class, 'verifyOrganisation'])->name('organisations.verify');
     Route::post('/organisations/{organisation}/unverify', [AdminDashboardController::class, 'unverifyOrganisation'])->name('organisations.unverify');
+    Route::get('/notifications', [AdminDashboardController::class, 'notifications'])->name('notifications.index');
     Route::get('/notifications/{notification}', [AdminDashboardController::class, 'showNotification'])->name('notifications.show');
 });

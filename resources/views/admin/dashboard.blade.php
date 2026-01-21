@@ -64,12 +64,12 @@
     </div>
 
     <div class="row g-4">
-        {{-- All Organisations --}}
+        {{-- Recent Organisations --}}
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <a href="{{ route('admin.organisations.index') }}" class="link-dark text-decoration-none"><strong>All Organisations</strong></a>
-                    <span class="badge bg-primary">{{ $stats['organisations'] }} total</span>
+                    <a href="{{ route('admin.organisations.index') }}" class="link-dark text-decoration-none"><strong>Recent Organisations</strong></a>
+                    <a href="{{ route('admin.organisations.index') }}" class="btn btn-sm btn-outline-primary">View All ({{ $stats['organisations'] }})</a>
                 </div>
                 <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
                     @forelse($organisations as $org)
@@ -109,7 +109,8 @@
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong>Recent Notifications (All Orgs)</strong>
+                    <a href="{{ route('admin.notifications.index') }}" class="link-dark text-decoration-none"><strong>Recent Notifications</strong></a>
+                    <a href="{{ route('admin.notifications.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
                 <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
                     @forelse($recentNotifications as $notification)

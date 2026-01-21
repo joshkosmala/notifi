@@ -25,6 +25,7 @@ class DashboardController extends Controller
             'organisations' => Organisation::withCount(['subscribers', 'notifications'])
                 ->with(['notifications' => fn ($q) => $q->whereNotNull('sent_at')->with('events')])
                 ->latest()
+                ->take(10)
                 ->get(),
             'recentNotifications' => Notification::with(['organisation', 'events'])
                 ->whereNotNull('sent_at')
@@ -42,6 +43,15 @@ class DashboardController extends Controller
             ->paginate(25);
 
         return view('admin.organisations.index', compact('organisations'));
+    }
+
+    public function notifications(): View
+    {
+        $notifications = Notification::with(['organisation', 'events'])
+            ->latest()
+            ->paginate(25);
+
+        return view('admin.notifications.index', compact('notifications'));
     }
 
     public function showOrganisation(Organisation $organisation): View
