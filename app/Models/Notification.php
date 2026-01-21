@@ -6,6 +6,7 @@ use App\Services\FirebaseService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 
 class Notification extends Model
@@ -35,6 +36,61 @@ class Notification extends Model
     public function organisation(): BelongsTo
     {
         return $this->belongsTo(Organisation::class);
+    }
+
+    /**
+     * Events (opens, clicks) for this notification.
+     */
+    public function events(): HasMany
+    {
+        return $this->hasMany(NotificationEvent::class);
+    }
+
+    /**
+     * Get unique open count.
+     */
+    public function getOpenCount(): int
+    {
+        return $this->events()->where('event_type', 'open')->count();
+    }
+
+    /**
+     * Get unique link click count.
+     */
+    public function getClickCount(): int
+    {
+        return $this->events()->where('event_type', 'link_click')->count();
+    }
+
+    /**
+     * Get subscriber count at time notification was sent.
+     */
+    public function getRecipientCount(): int
+    {
+        return $this->organisation
+            ->subscribers()
+            ->whereNull('organisation_subscriber.unsubscribed_at')
+            ->count();
+    }
+
+    /**
+     * Get analytics summary for this notification.
+     *
+     * @return array{opens: int, clicks: int, recipients: int, open_rate: float, click_rate: float}
+     */
+    public function getAnalytics(): array
+    {
+        $opens = $this->getOpenCount();
+        $clicks = $this->getClickCount();
+        $recipients = $this->getRecipientCount();
+
+        return [
+            'opens' => $opens,
+            'clicks' => $clicks,
+            'recipients' => $recipients,
+            'open_rate' => $recipients > 0 ? round(($opens / $recipients) * 100, 1) : 0,
+            'click_rate' => $recipients > 0 ? round(($clicks / $recipients) * 100, 1) : 0,
+        ];
     }
 
     /**

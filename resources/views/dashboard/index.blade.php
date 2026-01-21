@@ -15,7 +15,7 @@
 
     {{-- Stats Cards --}}
     <div class="row g-4 mb-4">
-        <div class="col-md-3">
+        <div class="col-md-3 col-6">
             <div class="card text-bg-success">
                 <div class="card-body">
                     <h5 class="card-title">Subscribers</h5>
@@ -23,27 +23,27 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 col-6">
             <div class="card text-bg-primary">
                 <div class="card-body">
-                    <h5 class="card-title">Total Notifications</h5>
-                    <p class="card-text display-6">{{ $stats['notifications'] }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">Sent</h5>
+                    <h5 class="card-title">Notifications Sent</h5>
                     <p class="card-text display-6">{{ $stats['sent'] }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-info">
+        <div class="col-md-3 col-6">
+            <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Scheduled</h5>
-                    <p class="card-text display-6">{{ $stats['scheduled'] }}</p>
+                    <h5 class="card-title">📖 Total Opens</h5>
+                    <p class="card-text display-6">{{ $analytics['total_opens'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">🔗 Link Clicks</h5>
+                    <p class="card-text display-6">{{ $analytics['total_clicks'] }}</p>
                 </div>
             </div>
         </div>

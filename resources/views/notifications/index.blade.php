@@ -27,7 +27,7 @@
                     <tr>
                         <th>Title</th>
                         <th>Status</th>
-                        <th>Created</th>
+                        <th>Analytics</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -58,7 +58,21 @@
                                 @endif
                             </td>
                             <td>
-                                <small class="text-muted">{{ $notification->created_at->format('d M Y') }}</small>
+                                @if($notification->isSent())
+                                    @php $analytics = $notification->getAnalytics(); @endphp
+                                    <span title="{{ $analytics['open_rate'] }}% open rate">
+                                        📖 {{ $analytics['opens'] }}
+                                    </span>
+                                    @if($notification->link)
+                                        <span class="ms-2" title="{{ $analytics['click_rate'] }}% click rate">
+                                            🔗 {{ $analytics['clicks'] }}
+                                        </span>
+                                    @endif
+                                    <br>
+                                    <small class="text-muted">of {{ $analytics['recipients'] }} subscribers</small>
+                                @else
+                                    <small class="text-muted">—</small>
+                                @endif
                             </td>
                             <td class="text-end">
                                 @if(!$notification->isSent())

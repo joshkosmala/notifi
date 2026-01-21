@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DeviceController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\NotificationEventController;
 use App\Http\Controllers\Api\V1\OrganisationController;
 use App\Http\Controllers\Api\V1\SubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/notifications/{notification}', [NotificationController::class, 'show']);
         Route::get('/organisations/{organisation}/notifications', [NotificationController::class, 'byOrganisation']);
+        Route::post('/notifications/{notification}/events', [NotificationEventController::class, 'store']);
 
         // Device (push notifications)
         Route::post('/device', [DeviceController::class, 'store']);

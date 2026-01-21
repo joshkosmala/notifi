@@ -24,7 +24,7 @@ class StoreNotificationRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:50'],
             'body' => ['required', 'string', 'max:280'],
-            'link' => ['nullable', 'url', 'max:255'],
+            'link' => ['nullable', 'string', 'max:255', 'regex:/^https?:\/\/[^\s\/$.?#].[^\s]*$/i'],
             'scheduled_for' => ['nullable', 'date', 'after:now'],
         ];
     }
@@ -34,6 +34,15 @@ class StoreNotificationRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        // Normalize link - prepend https:// if missing
+        if ($this->link) {
+            $link = trim($this->link);
+            if (! preg_match('/^https?:\/\//i', $link)) {
+                $link = 'https://'.$link;
+            }
+            $this->merge(['link' => $link]);
+        }
+
         if ($this->scheduled_for) {
             // Get the organisation's timezone
             $organisation = $this->user()->organisations()->first();
@@ -57,6 +66,7 @@ class StoreNotificationRequest extends FormRequest
         return [
             'title.max' => 'The title cannot exceed 50 characters.',
             'body.max' => 'The message cannot exceed 280 characters.',
+            'link.regex' => 'Please enter a valid link (e.g., example.com or https://example.com).',
             'scheduled_for.after' => 'The scheduled time must be in the future.',
         ];
     }

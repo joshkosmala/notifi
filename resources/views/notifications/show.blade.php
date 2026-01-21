@@ -101,6 +101,40 @@
                 </div>
             </div>
 
+            {{-- Analytics Card (only for sent notifications) --}}
+            @if($notification->isSent())
+                @php $analytics = $notification->getAnalytics(); @endphp
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <strong>📊 Analytics</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="{{ $notification->link ? 'col-md-4' : 'col-md-6' }} mb-3 mb-md-0">
+                                <div class="border rounded p-3">
+                                    <h3 class="mb-1">{{ $analytics['recipients'] }}</h3>
+                                    <small class="text-muted">Recipients</small>
+                                </div>
+                            </div>
+                            <div class="{{ $notification->link ? 'col-md-4' : 'col-md-6' }} mb-3 mb-md-0">
+                                <div class="border rounded p-3">
+                                    <h3 class="mb-1">{{ $analytics['opens'] }}</h3>
+                                    <small class="text-muted">Opens ({{ $analytics['open_rate'] }}%)</small>
+                                </div>
+                            </div>
+                            @if($notification->link)
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3">
+                                        <h3 class="mb-1">{{ $analytics['clicks'] }}</h3>
+                                        <small class="text-muted">Link Clicks ({{ $analytics['click_rate'] }}%)</small>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+
         </div>
     </div>
 @endsection

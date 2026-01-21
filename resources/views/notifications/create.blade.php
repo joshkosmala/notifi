@@ -98,11 +98,12 @@
                         <div class="collapse {{ old('link') ? 'show' : '' }}" id="link-field">
                             <div class="mb-3">
                                 <label for="link" class="form-label">Link</label>
-                                <input type="url" 
+                                <input type="text" 
                                        class="form-control @error('link') is-invalid @enderror" 
                                        id="link" 
                                        name="link" 
-                                       value="{{ old('link') }}">
+                                       value="{{ old('link') }}"
+                                       placeholder="example.com">
                                 @error('link')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
