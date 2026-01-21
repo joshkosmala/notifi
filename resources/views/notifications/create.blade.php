@@ -76,6 +76,13 @@
                                     data-bs-target="#schedule-field">
                                 📅 Schedule
                             </button>
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-secondary" 
+                                    id="toggle-email"
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#email-field">
+                                ✉️ Email Subscribers
+                            </button>
                             @if($organisation->hasFacebookPage() || $organisation->hasXAccount())
                                 <button type="button" 
                                         class="btn btn-sm btn-outline-secondary" 
@@ -116,6 +123,26 @@
                                 @error('scheduled_for')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+
+                        {{-- Email Field (Collapsible) --}}
+                        <div class="collapse {{ old('send_email') ? 'show' : '' }}" id="email-field">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="send_email" 
+                                           name="send_email" 
+                                           value="1"
+                                           {{ old('send_email') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="send_email">
+                                        Also send notification by email
+                                    </label>
+                                </div>
+                                <div class="form-text">
+                                    Sends an email to subscribers who have provided their email address.
+                                </div>
                             </div>
                         </div>
 
@@ -169,7 +196,7 @@
                             <button type="submit" class="btn btn-secondary">
                                 Save as Draft
                             </button>
-                            <button type="submit" name="send_now" value="1" class="btn btn-primary">
+                            <button type="submit" name="send_now" value="1" class="btn btn-primary" id="send-btn">
                                 Send Now
                             </button>
                         </div>
@@ -204,6 +231,20 @@
             const scheduleField = document.getElementById('schedule-field');
             const toggleLink = document.getElementById('toggle-link');
             const toggleSchedule = document.getElementById('toggle-schedule');
+            const scheduledForInput = document.getElementById('scheduled_for');
+            const sendBtn = document.getElementById('send-btn');
+
+            // Update send button text based on schedule
+            function updateSendButtonText() {
+                if (scheduledForInput.value) {
+                    sendBtn.textContent = 'Schedule';
+                } else {
+                    sendBtn.textContent = 'Send Now';
+                }
+            }
+
+            scheduledForInput.addEventListener('change', updateSendButtonText);
+            scheduledForInput.addEventListener('input', updateSendButtonText);
 
             linkField.addEventListener('shown.bs.collapse', () => {
                 toggleLink.classList.remove('btn-outline-secondary');
@@ -222,7 +263,8 @@
             scheduleField.addEventListener('hidden.bs.collapse', () => {
                 toggleSchedule.classList.remove('btn-secondary');
                 toggleSchedule.classList.add('btn-outline-secondary');
-                document.getElementById('scheduled_for').value = '';
+                scheduledForInput.value = '';
+                updateSendButtonText();
             });
 
             // Social field toggle (only if elements exist)
@@ -257,6 +299,9 @@
                 toggleSocial.classList.remove('btn-outline-secondary');
                 toggleSocial.classList.add('btn-secondary');
             }
+
+            // Initial button text
+            updateSendButtonText();
         });
     </script>
     @endpush

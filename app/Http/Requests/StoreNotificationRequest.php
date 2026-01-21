@@ -30,6 +30,24 @@ class StoreNotificationRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->scheduled_for) {
+            // Get the organisation's timezone
+            $organisation = $this->user()->organisations()->first();
+            $timezone = $organisation?->timezone ?? 'Pacific/Auckland';
+
+            // Convert from organisation's timezone to UTC
+            $localTime = \Carbon\Carbon::parse($this->scheduled_for, $timezone);
+            $this->merge([
+                'scheduled_for' => $localTime->utc()->format('Y-m-d H:i:s'),
+            ]);
+        }
+    }
+
+    /**
      * Get custom messages for validator errors.
      *
      * @return array<string, string>

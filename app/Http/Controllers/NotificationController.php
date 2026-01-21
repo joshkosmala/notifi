@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
+use App\Mail\NotificationEmail;
 use App\Models\Notification;
 use App\Models\Organisation;
 use App\Services\SocialPostingService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class NotificationController extends Controller
@@ -54,8 +56,20 @@ class NotificationController extends Controller
 
         $notification = $organisation->notifications()->create($request->validated());
 
+        // If scheduled for the future, don't send now
+        if ($notification->scheduled_for && $notification->scheduled_for->isFuture()) {
+            return redirect()->route('notifications.index')
+                ->with('success', 'Notification scheduled for '.$notification->formatInTimezone($notification->scheduled_for).'.');
+        }
+
         if ($request->has('send_now')) {
             $notification->markAsSent();
+
+            // Send emails if requested
+            $emailCount = 0;
+            if ($request->boolean('send_email')) {
+                $emailCount = $this->sendEmailNotifications($notification, $organisation);
+            }
 
             // Post to social media if requested
             $socialResults = [];
@@ -72,8 +86,13 @@ class NotificationController extends Controller
                 $socialResults = $this->socialPostingService->postToAll($notification, $platforms);
             }
 
-            // Build success message with social posting results
+            // Build success message
             $message = 'Notification sent successfully!';
+
+            if ($emailCount > 0) {
+                $message .= " Emailed to {$emailCount} subscriber".($emailCount === 1 ? '' : 's').'.';
+            }
+
             if (! empty($socialResults)) {
                 $posted = [];
                 $failed = [];
@@ -197,5 +216,23 @@ class NotificationController extends Controller
         $organisation = $this->getOrganisation();
 
         abort_unless($notification->organisation_id === $organisation->id, 403);
+    }
+
+    /**
+     * Send email notifications to subscribers with email addresses.
+     */
+    protected function sendEmailNotifications(Notification $notification, Organisation $organisation): int
+    {
+        $subscribers = $organisation->subscribers()
+            ->whereNull('organisation_subscriber.unsubscribed_at')
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->get();
+
+        foreach ($subscribers as $subscriber) {
+            Mail::to($subscriber->email)->queue(new NotificationEmail($notification, $organisation));
+        }
+
+        return $subscribers->count();
     }
 }
