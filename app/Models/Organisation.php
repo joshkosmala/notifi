@@ -23,6 +23,7 @@ class Organisation extends Model
         'url',
         'phone',
         'email',
+        'verified_at',
         'facebook_page_id',
         'facebook_page_name',
         'facebook_page_token',

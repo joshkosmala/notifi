@@ -62,7 +62,7 @@ class SubscriptionController extends Controller
         // Check if organisation is verified
         if (! $organisation->verified_at) {
             return response()->json([
-                'message' => 'Organisation is not available for subscriptions.',
+                'message' => 'This organisation has not been verified yet.',
             ], 422);
         }
 

@@ -15,10 +15,34 @@
                 <span class="ms-2">{{ $organisation->email }}</span>
             </p>
         </div>
-        <a href="{{ route('admin.organisations.index') }}" class="btn btn-outline-secondary">
-            ← Back to Organisations
-        </a>
+        <div class="d-flex gap-2">
+            @if($organisation->isVerified())
+                <form action="{{ route('admin.organisations.unverify', $organisation) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-warning" onclick="return confirm('Remove verification from this organisation?')">
+                        Remove Verification
+                    </button>
+                </form>
+            @else
+                <form action="{{ route('admin.organisations.verify', $organisation) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-success">
+                        ✓ Verify Organisation
+                    </button>
+                </form>
+            @endif
+            <a href="{{ route('admin.organisations.index') }}" class="btn btn-outline-secondary">
+                ← Back to Organisations
+            </a>
+        </div>
     </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
 
     <div class="row g-4">
         {{-- Organisation Details --}}

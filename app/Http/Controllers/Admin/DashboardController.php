@@ -54,4 +54,18 @@ class DashboardController extends Controller
 
         return view('admin.notifications.show', compact('notification'));
     }
+
+    public function verifyOrganisation(Organisation $organisation)
+    {
+        $organisation->update(['verified_at' => now()]);
+
+        return back()->with('success', 'Organisation has been verified.');
+    }
+
+    public function unverifyOrganisation(Organisation $organisation)
+    {
+        $organisation->update(['verified_at' => null]);
+
+        return back()->with('success', 'Organisation verification has been removed.');
+    }
 }
