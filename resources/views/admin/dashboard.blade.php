@@ -20,14 +20,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="card text-bg-info">
-                <div class="card-body">
-                    <h6 class="card-title">Admins</h6>
-                    <p class="card-text display-6">{{ $stats['admins'] }}</p>
-                </div>
-            </div>
-        </div>
+
         <div class="col-md-2">
             <div class="card text-bg-success">
                 <div class="card-body">
@@ -49,6 +42,22 @@
                 <div class="card-body">
                     <h6 class="card-title">Sent</h6>
                     <p class="card-text display-6">{{ $stats['sent'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-bg-dark">
+                <div class="card-body">
+                    <h6 class="card-title">📖 Opens</h6>
+                    <p class="card-text display-6">{{ $stats['opens'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card text-bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">🔗 Link Clicks</h6>
+                    <p class="card-text display-6">{{ $stats['link_clicks'] }}</p>
                 </div>
             </div>
         </div>
@@ -76,8 +85,17 @@
                                 <small class="text-muted">{{ $org->email }}</small>
                             </div>
                             <div class="text-end">
-                                <span class="badge bg-secondary">{{ $org->subscribers_count }} subscribers</span>
-                                <span class="badge bg-info">{{ $org->notifications_count }} notifications</span>
+                                <span class="badge bg-secondary" style="min-width: 100px;">{{ $org->subscribers_count }} {{ Str::plural('subscriber', $org->subscribers_count) }}</span>
+                                <span class="badge bg-info" style="min-width: 100px;">{{ $org->notifications_count }} {{ Str::plural('notification', $org->notifications_count) }}</span>
+                                @php
+                                    $orgOpens = $org->notifications->sum(fn($n) => $n->events->where('event_type', 'open')->count());
+                                    $orgClicks = $org->notifications->sum(fn($n) => $n->events->where('event_type', 'link_click')->count());
+                                @endphp
+                                @if($orgOpens > 0 || $orgClicks > 0)
+                                    <br>
+                                    <span class="badge bg-dark" style="min-width: 100px;">{{ $orgOpens }} {{ Str::plural('open', $orgOpens) }}</span>
+                                    <span class="badge bg-light text-dark" style="min-width: 100px;">{{ $orgClicks }} {{ Str::plural('click', $orgClicks) }}</span>
+                                @endif
                             </div>
                         </a>
                     @empty
@@ -112,6 +130,16 @@
                                 <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
                             </div>
                             <p class="mb-0 mt-2 small text-truncate text-muted">{{ $notification->body }}</p>
+                            @php
+                                $opens = $notification->events->where('event_type', 'open')->count();
+                                $clicks = $notification->events->where('event_type', 'link_click')->count();
+                            @endphp
+                            @if($opens > 0 || $clicks > 0)
+                                <div class="mt-1 text-end">
+                                    <span class="badge bg-dark">{{ $opens }} {{ Str::plural('open', $opens) }}</span>
+                                    @if($notification->link)<span class="badge bg-light text-dark">{{ $clicks }} {{ Str::plural('click', $clicks) }}</span>@endif
+                                </div>
+                            @endif
                         </a>
                     @empty
                         <div class="list-group-item text-muted">No notifications yet.</div>

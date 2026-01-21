@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-0">All Organisations</h1>
-            <p class="text-muted mb-0">{{ $organisations->total() }} organisations</p>
+            <p class="text-muted mb-0">{{ $organisations->total() }} {{ Str::plural('organisation', $organisations->total()) }}</p>
         </div>
         <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
             ← Back to Dashboard
@@ -23,6 +23,8 @@
                         <th class="text-center">Admins</th>
                         <th class="text-center">Subscribers</th>
                         <th class="text-center">Notifications</th>
+                        <th class="text-center">Opens</th>
+                        <th class="text-center">Clicks</th>
                         <th>Created</th>
                     </tr>
                 </thead>
@@ -47,13 +49,19 @@
                             <td class="text-center">{{ $org->administrators_count }}</td>
                             <td class="text-center">{{ $org->subscribers_count }}</td>
                             <td class="text-center">{{ $org->notifications_count }}</td>
+                            @php
+                                $orgOpens = $org->notifications->sum(fn($n) => $n->events->where('event_type', 'open')->count());
+                                $orgClicks = $org->notifications->sum(fn($n) => $n->events->where('event_type', 'link_click')->count());
+                            @endphp
+                            <td class="text-center">{{ $orgOpens }}</td>
+                            <td class="text-center">{{ $orgClicks }}</td>
                             <td>
                                 <small class="text-muted">{{ $org->created_at->format('d M Y') }}</small>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-muted text-center py-4">No organisations yet.</td>
+                            <td colspan="8" class="text-muted text-center py-4">No organisations yet.</td>
                         </tr>
                     @endforelse
                 </tbody>

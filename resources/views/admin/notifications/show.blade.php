@@ -63,6 +63,33 @@
                     </div>
                 </div>
             </div>
+
+            @if($notification->isSent())
+                @php $analytics = $notification->getAnalytics(); @endphp
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <strong>📊 Analytics</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h4 class="mb-0">{{ $analytics['recipients'] }}</h4>
+                                <small class="text-muted">Recipients</small>
+                            </div>
+                            <div class="col-md-4">
+                                <h4 class="mb-0">{{ $analytics['opens'] }} <small class="text-muted">({{ number_format($analytics['open_rate'], 1) }}%)</small></h4>
+                                <small class="text-muted">📖 Opens</small>
+                            </div>
+                            @if($notification->link)
+                                <div class="col-md-4">
+                                    <h4 class="mb-0">{{ $analytics['clicks'] }} <small class="text-muted">({{ number_format($analytics['click_rate'], 1) }}%)</small></h4>
+                                    <small class="text-muted">🔗 Link Clicks</small>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection

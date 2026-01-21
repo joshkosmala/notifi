@@ -98,7 +98,7 @@
                     <div class="card text-bg-info">
                         <div class="card-body text-center">
                             <div class="display-6">{{ $organisation->administrators_count }}</div>
-                            <small>Admins</small>
+                            <small>{{ Str::plural('Admin', $organisation->administrators_count) }}</small>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                     <div class="card text-bg-success">
                         <div class="card-body text-center">
                             <div class="display-6">{{ $organisation->subscribers_count }}</div>
-                            <small>Subscribers</small>
+                            <small>{{ Str::plural('Subscriber', $organisation->subscribers_count) }}</small>
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                     <div class="card text-bg-secondary">
                         <div class="card-body text-center">
                             <div class="display-6">{{ $organisation->notifications_count }}</div>
-                            <small>Notifications</small>
+                            <small>{{ Str::plural('Notification', $organisation->notifications_count) }}</small>
                         </div>
                     </div>
                 </div>

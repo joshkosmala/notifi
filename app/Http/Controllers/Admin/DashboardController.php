@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\NotificationEvent;
 use App\Models\Organisation;
 use App\Models\Subscriber;
-use App\Models\User;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -19,12 +19,15 @@ class DashboardController extends Controller
                 'subscribers' => Subscriber::count(),
                 'notifications' => Notification::count(),
                 'sent' => Notification::whereNotNull('sent_at')->count(),
-                'admins' => User::where('is_super_admin', false)->count(),
+                'opens' => NotificationEvent::where('event_type', 'open')->count(),
+                'link_clicks' => NotificationEvent::where('event_type', 'link_click')->count(),
             ],
             'organisations' => Organisation::withCount(['subscribers', 'notifications'])
+                ->with(['notifications' => fn ($q) => $q->whereNotNull('sent_at')->with('events')])
                 ->latest()
                 ->get(),
-            'recentNotifications' => Notification::with('organisation')
+            'recentNotifications' => Notification::with(['organisation', 'events'])
+                ->whereNotNull('sent_at')
                 ->latest()
                 ->take(10)
                 ->get(),
@@ -34,6 +37,7 @@ class DashboardController extends Controller
     public function organisations(): View
     {
         $organisations = Organisation::withCount(['subscribers', 'notifications', 'administrators'])
+            ->with(['notifications' => fn ($q) => $q->whereNotNull('sent_at')->with('events')])
             ->latest()
             ->paginate(25);
 

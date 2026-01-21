@@ -69,7 +69,7 @@
                                         </span>
                                     @endif
                                     <br>
-                                    <small class="text-muted">of {{ $analytics['recipients'] }} subscribers</small>
+                                    <small class="text-muted">of {{ $analytics['recipients'] }} {{ Str::plural('subscriber', $analytics['recipients']) }}</small>
                                 @else
                                     <small class="text-muted">—</small>
                                 @endif
