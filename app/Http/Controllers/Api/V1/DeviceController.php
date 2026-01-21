@@ -23,7 +23,7 @@ class DeviceController extends Controller
         $subscriber = $request->user();
 
         $subscriber->update([
-            'device_token' => $request->input('token'),
+            'fcm_token' => $request->input('token'),
             'device_platform' => $request->input('platform'),
         ]);
 
@@ -42,7 +42,7 @@ class DeviceController extends Controller
         $subscriber = $request->user();
 
         $subscriber->update([
-            'device_token' => null,
+            'fcm_token' => null,
             'device_platform' => null,
         ]);
 

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\FirebaseService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 class Notification extends Model
 {
@@ -84,12 +86,63 @@ class Notification extends Model
     }
 
     /**
-     * Mark the notification as sent.
+     * Mark the notification as sent and send push notifications.
      */
     public function markAsSent(): bool
     {
-        return $this->forceFill([
+        $saved = $this->forceFill([
             'sent_at' => $this->freshTimestamp(),
         ])->save();
+
+        if ($saved) {
+            $this->sendPushNotifications();
+        }
+
+        return $saved;
+    }
+
+    /**
+     * Send push notifications to all subscribers with FCM tokens.
+     */
+    protected function sendPushNotifications(): void
+    {
+        $firebase = app(FirebaseService::class);
+
+        if (! $firebase->isConfigured()) {
+            Log::info('Firebase not configured, skipping push notifications');
+
+            return;
+        }
+
+        $subscribers = $this->organisation
+            ->subscribers()
+            ->whereNull('organisation_subscriber.unsubscribed_at')
+            ->whereNotNull('fcm_token')
+            ->get();
+
+        if ($subscribers->isEmpty()) {
+            Log::info('No subscribers with FCM tokens for notification', ['notification_id' => $this->id]);
+
+            return;
+        }
+
+        $tokens = $subscribers->pluck('fcm_token')->toArray();
+
+        $result = $firebase->sendToDevices(
+            $tokens,
+            $this->title,
+            $this->body,
+            [
+                'notification_id' => (string) $this->id,
+                'organisation_id' => (string) $this->organisation_id,
+                'link' => $this->link ?? '',
+            ]
+        );
+
+        Log::info('Push notifications sent', [
+            'notification_id' => $this->id,
+            'success' => $result['success'],
+            'failure' => $result['failure'],
+        ]);
     }
 }

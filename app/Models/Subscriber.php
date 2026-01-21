@@ -15,7 +15,7 @@ class Subscriber extends Model
         'phone',
         'name',
         'email',
-        'device_token',
+        'fcm_token',
         'device_platform',
         'verification_code',
         'verification_code_expires_at',

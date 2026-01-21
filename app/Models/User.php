@@ -24,6 +24,8 @@ class User extends Authenticatable
         'password',
         'oauth_provider',
         'oauth_id',
+        'fcm_token',
+        'device_platform',
     ];
 
     /**
