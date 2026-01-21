@@ -101,6 +101,50 @@
                 </div>
             </div>
 
+            {{-- Subscriber QR Code --}}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong>📱 Subscriber QR Code</strong>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        Share this QR code with people so they can subscribe to your notifications. Print it on flyers, posters, or display it at your venue.
+                    </p>
+
+                    <div class="row">
+                        <div class="col-md-6 text-center mb-3 mb-md-0">
+                            <img src="{{ route('subscribe.qr', $organisation->subscribe_code) }}" 
+                                 alt="Subscribe QR Code" 
+                                 class="img-fluid border rounded p-2"
+                                 style="max-width: 200px;">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Subscribe URL</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-sm" 
+                                           value="{{ $organisation->getSubscribeUrl() }}" 
+                                           id="subscribeUrl" readonly>
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" onclick="copyUrl()">
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Code</label>
+                                <input type="text" class="form-control form-control-sm" 
+                                       value="{{ $organisation->subscribe_code }}" readonly>
+                            </div>
+                            <a href="{{ route('subscribe.qr', $organisation->subscribe_code) }}" 
+                               download="subscribe-qr.svg" 
+                               class="btn btn-outline-primary btn-sm">
+                                Download QR Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Organisation Details --}}
             <div class="card">
                 <div class="card-header">
@@ -141,3 +185,19 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+function copyUrl() {
+    const input = document.getElementById('subscribeUrl');
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    
+    // Show feedback
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = originalText, 2000);
+}
+</script>
+@endpush

@@ -33,18 +33,31 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Subscribe to an organisation.
+     * Subscribe to an organisation by ID or code.
      *
      * POST /api/v1/subscriptions
      */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'organisation_id' => ['required', 'exists:organisations,id'],
+            'organisation_id' => ['required_without:code', 'exists:organisations,id'],
+            'code' => ['required_without:organisation_id', 'string', 'size:8'],
         ]);
 
         $subscriber = $request->user();
-        $organisation = Organisation::findOrFail($request->input('organisation_id'));
+
+        // Find organisation by ID or code
+        if ($request->has('code')) {
+            $organisation = Organisation::where('subscribe_code', strtoupper($request->input('code')))->first();
+            
+            if (! $organisation) {
+                return response()->json([
+                    'message' => 'Invalid organisation code.',
+                ], 404);
+            }
+        } else {
+            $organisation = Organisation::findOrFail($request->input('organisation_id'));
+        }
 
         // Check if organisation is verified
         if (! $organisation->verified_at) {

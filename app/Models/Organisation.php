@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Organisation extends Model
 {
@@ -14,6 +15,7 @@ class Organisation extends Model
 
     protected $fillable = [
         'name',
+        'subscribe_code',
         'address',
         'latitude',
         'longitude',
@@ -30,6 +32,27 @@ class Organisation extends Model
         'x_refresh_token',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Organisation $organisation) {
+            if (empty($organisation->subscribe_code)) {
+                $organisation->subscribe_code = static::generateUniqueCode();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique 8-character subscribe code.
+     */
+    public static function generateUniqueCode(): string
+    {
+        do {
+            $code = strtoupper(Str::random(8));
+        } while (static::where('subscribe_code', $code)->exists());
+
+        return $code;
+    }
+
     protected function casts(): array
     {
         return [
@@ -40,6 +63,22 @@ class Organisation extends Model
             'x_access_token' => 'encrypted',
             'x_refresh_token' => 'encrypted',
         ];
+    }
+
+    /**
+     * Get the public subscribe URL for this organisation.
+     */
+    public function getSubscribeUrl(): string
+    {
+        return url("/s/{$this->subscribe_code}");
+    }
+
+    /**
+     * Get the deep link URL for the mobile app.
+     */
+    public function getDeepLinkUrl(): string
+    {
+        return "notifi://subscribe/{$this->subscribe_code}";
     }
 
     /**

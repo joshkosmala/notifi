@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrganisationSettingsController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\SubscribeController;
 use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Public subscribe page (for QR codes and links)
+Route::get('/s/{code}', [SubscribeController::class, 'show'])->name('subscribe.show');
+Route::get('/s/{code}/qr', [SubscribeController::class, 'qrCode'])->name('subscribe.qr');
 
 // OAuth routes (publicly accessible for redirect flow)
 Route::get('/auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('socialite.redirect');

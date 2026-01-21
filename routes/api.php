@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
         // Notifications
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/notifications/{notification}', [NotificationController::class, 'show']);
+        Route::get('/organisations/{organisation}/notifications', [NotificationController::class, 'byOrganisation']);
 
         // Device (push notifications)
         Route::post('/device', [DeviceController::class, 'store']);

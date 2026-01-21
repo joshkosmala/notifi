@@ -44,6 +44,45 @@ class NotificationController extends Controller
     }
 
     /**
+     * List notifications for a specific organisation.
+     *
+     * GET /api/v1/organisations/{organisation}/notifications
+     */
+    public function byOrganisation(Request $request, \App\Models\Organisation $organisation): JsonResponse
+    {
+        $subscriber = $request->user();
+
+        // Check subscriber is subscribed to this organisation
+        $isSubscribed = $subscriber->activeOrganisations()
+            ->where('organisations.id', $organisation->id)
+            ->exists();
+
+        if (! $isSubscribed) {
+            abort(403, 'You are not subscribed to this organisation.');
+        }
+
+        $notifications = Notification::query()
+            ->where('organisation_id', $organisation->id)
+            ->whereNotNull('sent_at')
+            ->latest('sent_at')
+            ->paginate(20);
+
+        return response()->json([
+            'notifications' => $notifications->through(fn ($notification) => [
+                'id' => $notification->id,
+                'title' => $notification->title,
+                'body' => $notification->body,
+                'link' => $notification->link,
+                'sent_at' => $notification->sent_at,
+                'organisation' => [
+                    'id' => $organisation->id,
+                    'name' => $organisation->name,
+                ],
+            ]),
+        ]);
+    }
+
+    /**
      * Get a single notification.
      *
      * GET /api/v1/notifications/{notification}
