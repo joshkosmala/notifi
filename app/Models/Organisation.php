@@ -21,6 +21,13 @@ class Organisation extends Model
         'url',
         'phone',
         'email',
+        'facebook_page_id',
+        'facebook_page_name',
+        'facebook_page_token',
+        'x_user_id',
+        'x_username',
+        'x_access_token',
+        'x_refresh_token',
     ];
 
     protected function casts(): array
@@ -29,6 +36,9 @@ class Organisation extends Model
             'verified_at' => 'datetime',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
+            'facebook_page_token' => 'encrypted',
+            'x_access_token' => 'encrypted',
+            'x_refresh_token' => 'encrypted',
         ];
     }
 
@@ -66,5 +76,46 @@ class Organisation extends Model
     public function isVerified(): bool
     {
         return $this->verified_at !== null;
+    }
+
+    /**
+     * Check if Facebook Page is connected.
+     */
+    public function hasFacebookPage(): bool
+    {
+        return $this->facebook_page_id !== null && $this->facebook_page_token !== null;
+    }
+
+    /**
+     * Check if X account is connected.
+     */
+    public function hasXAccount(): bool
+    {
+        return $this->x_user_id !== null && $this->x_access_token !== null;
+    }
+
+    /**
+     * Disconnect Facebook Page.
+     */
+    public function disconnectFacebook(): void
+    {
+        $this->update([
+            'facebook_page_id' => null,
+            'facebook_page_name' => null,
+            'facebook_page_token' => null,
+        ]);
+    }
+
+    /**
+     * Disconnect X account.
+     */
+    public function disconnectX(): void
+    {
+        $this->update([
+            'x_user_id' => null,
+            'x_username' => null,
+            'x_access_token' => null,
+            'x_refresh_token' => null,
+        ]);
     }
 }

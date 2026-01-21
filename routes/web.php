@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OrganisationSettingsController;
+use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\SubscriberController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,13 +46,24 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('subscribers', SubscriberController::class)->only(['index', 'show', 'destroy']);
     Route::post('/subscribers/{subscriber}/resubscribe', [SubscriberController::class, 'resubscribe'])->name('subscribers.resubscribe');
+
+    // Organisation Settings
+    Route::get('/settings', [OrganisationSettingsController::class, 'index'])->name('settings.index');
+
+    // Social Media OAuth for Organisation
+    Route::get('/settings/facebook/redirect', [SocialAuthController::class, 'facebookRedirect'])->name('settings.facebook.redirect');
+    Route::get('/settings/facebook/callback', [SocialAuthController::class, 'facebookCallback'])->name('settings.facebook.callback');
+    Route::delete('/settings/facebook', [OrganisationSettingsController::class, 'disconnectFacebook'])->name('settings.facebook.disconnect');
+
+    Route::get('/settings/x/redirect', [SocialAuthController::class, 'xRedirect'])->name('settings.x.redirect');
+    Route::get('/settings/x/callback', [SocialAuthController::class, 'xCallback'])->name('settings.x.callback');
+    Route::delete('/settings/x', [OrganisationSettingsController::class, 'disconnectX'])->name('settings.x.disconnect');
 });
 
 // Super Admin routes (requires auth + super admin)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'super.admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/organisations', function () {
-        return redirect('/admin'); // Placeholder
-    })->name('organisations.index');
+    Route::get('/organisations', [AdminDashboardController::class, 'organisations'])->name('organisations.index');
+    Route::get('/organisations/{organisation}', [AdminDashboardController::class, 'showOrganisation'])->name('organisations.show');
+    Route::get('/notifications/{notification}', [AdminDashboardController::class, 'showNotification'])->name('notifications.show');
 });

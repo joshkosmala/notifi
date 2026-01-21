@@ -47,4 +47,14 @@ return [
         'redirect' => env('MICROSOFT_REDIRECT_URI', '/auth/microsoft/callback'),
     ],
 
+    'facebook' => [
+        'client_id' => env('FACEBOOK_APP_ID'),
+        'client_secret' => env('FACEBOOK_APP_SECRET'),
+    ],
+
+    'x' => [
+        'client_id' => env('X_CLIENT_ID'),
+        'client_secret' => env('X_CLIENT_SECRET'),
+    ],
+
 ];

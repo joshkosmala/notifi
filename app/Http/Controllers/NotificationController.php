@@ -6,11 +6,14 @@ use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use App\Models\Notification;
 use App\Models\Organisation;
+use App\Services\SocialPostingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class NotificationController extends Controller
 {
+    public function __construct(protected SocialPostingService $socialPostingService) {}
+
     /**
      * Get the current user's organisation.
      */
@@ -54,8 +57,43 @@ class NotificationController extends Controller
         if ($request->has('send_now')) {
             $notification->markAsSent();
 
+            // Post to social media if requested
+            $socialResults = [];
+            $platforms = [];
+
+            if ($request->boolean('post_to_facebook')) {
+                $platforms[] = 'facebook';
+            }
+            if ($request->boolean('post_to_x')) {
+                $platforms[] = 'x';
+            }
+
+            if (! empty($platforms)) {
+                $socialResults = $this->socialPostingService->postToAll($notification, $platforms);
+            }
+
+            // Build success message with social posting results
+            $message = 'Notification sent successfully!';
+            if (! empty($socialResults)) {
+                $posted = [];
+                $failed = [];
+                foreach ($socialResults as $platform => $success) {
+                    if ($success) {
+                        $posted[] = $platform === 'x' ? 'X' : 'Facebook';
+                    } else {
+                        $failed[] = $platform === 'x' ? 'X' : 'Facebook';
+                    }
+                }
+                if (! empty($posted)) {
+                    $message .= ' Posted to: '.implode(', ', $posted).'.';
+                }
+                if (! empty($failed)) {
+                    $message .= ' Failed to post to: '.implode(', ', $failed).'.';
+                }
+            }
+
             return redirect()->route('notifications.index')
-                ->with('success', 'Notification sent successfully!');
+                ->with('success', $message);
         }
 
         return redirect()->route('notifications.index')
@@ -95,8 +133,43 @@ class NotificationController extends Controller
         if ($request->has('send_now') && ! $notification->isSent()) {
             $notification->markAsSent();
 
+            // Post to social media if requested
+            $socialResults = [];
+            $platforms = [];
+
+            if ($request->boolean('post_to_facebook')) {
+                $platforms[] = 'facebook';
+            }
+            if ($request->boolean('post_to_x')) {
+                $platforms[] = 'x';
+            }
+
+            if (! empty($platforms)) {
+                $socialResults = $this->socialPostingService->postToAll($notification, $platforms);
+            }
+
+            // Build success message with social posting results
+            $message = 'Notification updated and sent!';
+            if (! empty($socialResults)) {
+                $posted = [];
+                $failed = [];
+                foreach ($socialResults as $platform => $success) {
+                    if ($success) {
+                        $posted[] = $platform === 'x' ? 'X' : 'Facebook';
+                    } else {
+                        $failed[] = $platform === 'x' ? 'X' : 'Facebook';
+                    }
+                }
+                if (! empty($posted)) {
+                    $message .= ' Posted to: '.implode(', ', $posted).'.';
+                }
+                if (! empty($failed)) {
+                    $message .= ' Failed to post to: '.implode(', ', $failed).'.';
+                }
+            }
+
             return redirect()->route('notifications.index')
-                ->with('success', 'Notification updated and sent!');
+                ->with('success', $message);
         }
 
         return redirect()->route('notifications.index')

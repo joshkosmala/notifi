@@ -59,14 +59,14 @@
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong>All Organisations</strong>
+                    <a href="{{ route('admin.organisations.index') }}" class="link-dark text-decoration-none"><strong>All Organisations</strong></a>
                     <span class="badge bg-primary">{{ $stats['organisations'] }} total</span>
                 </div>
                 <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
                     @forelse($organisations as $org)
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ route('admin.organisations.show', $org) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div>
-                                <strong>{{ $org->name }}</strong>
+                                <strong class="text-dark">{{ $org->name }}</strong>
                                 @if($org->isVerified())
                                     <span class="badge bg-success ms-2">Verified</span>
                                 @else
@@ -79,7 +79,7 @@
                                 <span class="badge bg-secondary">{{ $org->subscribers_count }} subscribers</span>
                                 <span class="badge bg-info">{{ $org->notifications_count }} notifications</span>
                             </div>
-                        </div>
+                        </a>
                     @empty
                         <div class="list-group-item text-muted">No organisations yet.</div>
                     @endforelse
@@ -95,10 +95,10 @@
                 </div>
                 <div class="list-group list-group-flush" style="max-height: 400px; overflow-y: auto;">
                     @forelse($recentNotifications as $notification)
-                        <div class="list-group-item">
+                        <a href="{{ route('admin.notifications.show', $notification) }}" class="list-group-item list-group-item-action">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <strong>{{ $notification->title }}</strong>
+                                    <strong class="text-dark">{{ $notification->title }}</strong>
                                     @if($notification->isSent())
                                         <span class="badge bg-success ms-2">Sent</span>
                                     @elseif($notification->scheduled_for)
@@ -111,8 +111,8 @@
                                 </div>
                                 <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
                             </div>
-                            <p class="mb-0 mt-2 small text-truncate">{{ $notification->body }}</p>
-                        </div>
+                            <p class="mb-0 mt-2 small text-truncate text-muted">{{ $notification->body }}</p>
+                        </a>
                     @empty
                         <div class="list-group-item text-muted">No notifications yet.</div>
                     @endforelse
