@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,20 +8,28 @@
     <title>{{ config('app.name', 'Notifi') }} - @yield('title', 'Welcome')</title>
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script>
+        // Prevent flash of wrong theme
+        (function() {
+            const saved = localStorage.getItem('theme');
+            const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-bs-theme', saved || prefers);
+        })();
+    </script>
 </head>
-<body class="bg-light">
+<body class="bg-body-tertiary">
     <div class="min-vh-100 d-flex flex-column justify-content-center py-5">
         <div class="container">
             <div class="text-center mb-4">
                 <a href="{{ url('/') }}" class="text-decoration-none">
-                    <h1 class="h2 text-dark"><span class="text-warning">📢</span> Notifi</h1>
+                    <h1 class="h2 text-body"><span class="text-warning">📢</span> Notifi</h1>
                 </a>
             </div>
 
             @yield('content')
 
             <div class="text-center mt-4">
-                <small class="text-muted">&copy; {{ date('Y') }} Notifi</small>
+                <small class="text-body-secondary">&copy; {{ date('Y') }} Notifi</small>
             </div>
         </div>
     </div>

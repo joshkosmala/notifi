@@ -7,6 +7,76 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoibm90aWZpbnoiLCJhIjoiY21rbXZwYWdrMGppZDNlcHlkczcxMXFqeSJ9.qrbOQi87M89FgLk_kcyuzg';
 
+// Dark mode theme management
+function getPreferredTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        return savedTheme;
+    }
+    return 'auto';
+}
+
+function getActualTheme(theme) {
+    if (theme === 'auto') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return theme;
+}
+
+function applyTheme(theme) {
+    const actualTheme = getActualTheme(theme);
+    document.documentElement.setAttribute('data-bs-theme', actualTheme);
+    updateThemeUI(theme);
+}
+
+function setTheme(theme) {
+    if (theme === 'auto') {
+        localStorage.removeItem('theme');
+    } else {
+        localStorage.setItem('theme', theme);
+    }
+    applyTheme(theme);
+}
+
+function updateThemeUI(theme) {
+    // Update dropdown icon based on current theme
+    const dropdownIcon = document.querySelector('#themeDropdown i');
+    if (dropdownIcon) {
+        dropdownIcon.className = 'bi';
+        if (theme === 'light') {
+            dropdownIcon.classList.add('bi-sun');
+        } else if (theme === 'dark') {
+            dropdownIcon.classList.add('bi-moon-stars');
+        } else {
+            dropdownIcon.classList.add('bi-circle-half');
+        }
+    }
+    
+    // Update checkmarks
+    document.querySelectorAll('.theme-check').forEach(check => {
+        check.style.display = check.dataset.theme === theme ? 'inline' : 'none';
+    });
+}
+
+// Initialize theme immediately (before DOMContentLoaded to prevent flash)
+applyTheme(getPreferredTheme());
+
+// Listen for system theme changes (affects auto mode)
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (!savedTheme) {
+        applyTheme('auto');
+    }
+});
+
+// Make setTheme available globally for the dropdown buttons
+window.setTheme = setTheme;
+
+// Update UI once DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    updateThemeUI(getPreferredTheme());
+});
+
 // Initialize international phone input on any element with data-phone-input
 document.addEventListener('DOMContentLoaded', function() {
     // Auto-dismiss Bootstrap alerts after 5 seconds
